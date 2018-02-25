@@ -1,15 +1,19 @@
 {
-  "name": "splash",
+  "name": "splash-everything",
   "version": "1.0.0",
-  "description": "The templating engine that ran over your dog",
+  "description": "The criminal changeling templating engine that ran over your dog",
   "bin": {
     "splash": "dist/index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["templating", "nightmares", "bad"],
-  "author": "Andreas Rønning (http://www.doomsday.no)",
+  "keywords": [
+    "templating",
+    "nightmares",
+    "bad"
+  ],
+  "author": "decept404",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^9.4.6",
