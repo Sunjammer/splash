@@ -1,18 +1,21 @@
 {
   "name": "splash",
   "version": "1.0.0",
-  "description": "",
+  "description": "The templating engine that ran over your dog",
   "bin": {
     "splash": "dist/index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
+  "keywords": ["templating", "nightmares", "bad"],
+  "author": "Andreas Rønning (http://www.doomsday.no)",
+  "license": "MIT",
+  "devDependencies": {
     "@types/node": "^9.4.6",
+    "typescript": "^2.7.2"
+  },
+  "dependencies": {
     "colors": "1.1.2",
     "commander": "2.14.1",
     "configstore": "^3.1.1",
