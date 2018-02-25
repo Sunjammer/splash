@@ -6,72 +6,64 @@ import FS = require('fs-extra')
 import Path = require('path')
 
 const pkg = require('../package.json');
- 
-// create a Configstore instance with an unique ID e.g. 
-// Package name and optionally some default values 
 const conf = new Configstore(pkg.name);
 
-function isDirEmpty(dir:string):boolean{
-    var files = FS.readdirSync(dir);
+function dirIsEmpty(dir:string):boolean{
+    const files = FS.readdirSync(dir);
     return files.length==0;
 }
 
-export default class Splash{
-
-    static spawn(source, target){
-        if(!FS.pathExistsSync(source))
-        {
-            throw 'Template source directory does not exist'
-        }
-        if(typeof target === "string"){
-            target = process.cwd()+Path.sep+target
-            console.log(colors.gray("Creating directory "+target))
-            FS.ensureDirSync(target)
-        }else{
-            target = process.cwd()
-        }
-        const options = { overwrite:false }
-        let abort = false
-        console.log(colors.gray("About to copy ")+colors.white(source)+" into "+colors.white(target))
-        if(!isDirEmpty(target)){
-            console.log(colors.yellow("Target directory not empty!"))
-            new Confirm("Abort?").ask(answer => {
-                if(!answer){
-                    new Confirm("Overwrite?").ask(answer => {
-                        if(answer){
-                            console.log(colors.yellow('Overwriting duplicate files if any...'))
-                            options.overwrite = true
-                        }else{
-                            console.log(colors.yellow('Keeping duplicate files if any...'))
-                        }
-                        FS.copySync(source, target, options)
-                        console.log(colors.green('Done'))
-                    })
-                }else{
-                    console.log(colors.red('Aborted'))
-                }
-            })
-        }else{
-            FS.copySync(source, target, options)
-            console.log(colors.green('Done'))
-        }
+function spawn(source:string, target:string){
+    if(!FS.pathExistsSync(source))
+        throw 'Template source directory does not exist'
+    if(typeof target === "string"){
+        target = process.cwd()+Path.sep+target
+        console.log(colors.gray("Creating directory "+target))
+        FS.ensureDirSync(target)
+    }else{
+        target = process.cwd()
     }
+    const options = { overwrite:false }
+    console.log(colors.gray("About to copy ")+colors.white(source)+" into "+colors.white(target))
+    if(!dirIsEmpty(target)){
+        console.log(colors.yellow("Target directory not empty!"))
+        new Confirm("Abort?").ask(answer => {
+            if(!answer){
+                new Confirm("Overwrite existing files?").ask(answer => {
+                    if(answer){
+                        console.log(colors.yellow('Overwriting duplicate files if any...'))
+                        options.overwrite = true
+                    }else{
+                        console.log(colors.yellow('Keeping duplicate files if any...'))
+                    }
+                    FS.copySync(source, target, options)
+                    console.log(colors.green('Done'))
+                })
+            }else{
+                console.log(colors.red('Aborted'))
+            }
+        })
+    }else{
+        FS.copySync(source, target, options)
+        console.log(colors.green('Done'))
+    }
+}
 
+export default class Splash{
     public static run(){
         Commander
             .name("splash")
             .version('0.0.1')
-            .usage('<template> [project]| map <name> | list')
+            .usage('<template> [targetdir]| map <name> | unmap <name> | list')
             .description('Splash or define a template')
             .action((name, tgt) => {
                 if(conf.has('list')){
                     let c = conf.get('list')
-                    for(let k in c){
+                    for(let k in c)
                         if(k==name){
-                            Splash.spawn(c[k], tgt)
+                            spawn(c[k], tgt)
                             return
                         }
-                    }
                 }
                 console.error("No such template")
             })
